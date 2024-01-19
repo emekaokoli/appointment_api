@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-    "migrate": "knex migrate:latest"
+    "migrate": "knex migrate:make create_appointments_tables",
+    "migrate:rollback": "knex migrate:rollback",
+    "migrate:latest": "knex migrate:latest",
+    "seed": "knex seed:make 01_user & knex seed:make 02_providers & knex seed:make 03_appointments",
+    "seed:run": "knex seed:run"
   },
   "keywords": [],
   "author": "Emeka Okoli",
@@ -25,7 +29,8 @@
     "pino": "^8.17.2",
     "pino-http": "^9.0.0",
     "swagger-ui-express": "^5.0.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@anatine/zod-openapi": "^2.2.2",

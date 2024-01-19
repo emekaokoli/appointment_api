@@ -1,5 +1,3 @@
-// Update with your config settings.
-
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
  */
@@ -9,7 +7,6 @@ module.exports = {
     connection: {
       // connectionString: process.env.DATABASE_URl,
       searchPath: ['knex, public'],
-      // this is for development
       host: '127.0.0.1',
       port: 5432,
       database: 'postgres',
@@ -21,10 +18,11 @@ module.exports = {
       max: 10,
     },
     migrations: {
-      directory: './src/data',
+      tableName: 'knex_migrations',
+      directory: './src/db/migrations',
     },
     seeds: {
-      directory: './src/data',
+      directory: './src/db/seeds',
     },
   },
 };
