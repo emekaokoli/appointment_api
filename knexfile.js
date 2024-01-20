@@ -5,7 +5,7 @@ module.exports = {
   development: {
     client: 'pg',
     connection: {
-      // connectionString: process.env.DATABASE_URl,
+      // connectionString: process.env.DATABASE_URL,
       searchPath: ['knex, public'],
       host: '127.0.0.1',
       port: 5432,
