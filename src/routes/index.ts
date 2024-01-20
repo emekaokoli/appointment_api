@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { router as appointmentRouter } from './appointment';
+import { router as appointmentRouter } from './appointment.routes';
 import { router as patientRouter } from './patients.routes';
 import { router as providerRouter } from './providers.routes';
 

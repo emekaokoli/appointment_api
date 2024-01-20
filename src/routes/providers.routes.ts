@@ -1,5 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { isEmpty } from 'lodash';
+import { validate } from '../middleware/validate';
+import { validateProviders } from '../schema/provider';
 import { AllProviders, FindOne, create } from '../services/providers.service';
 import { ResponseBuilder } from '../utils/responseBuilder';
 
@@ -43,6 +45,7 @@ async function findOneProvider(req: Request, res: Response) {
 
 router.get('/:id', findOneProvider);
 router.get('/', getProviders);
-router.post('/', createProvider);
+router.post('/', validate(validateProviders), createProvider);
 
 export { router };
+

@@ -29,8 +29,8 @@ exports.up = function (knex) {
         .notNullable()
         .references('user_id')
         .inTable('users');
-      table.dateTime('start_time').notNullable();
-      table.dateTime('end_time').notNullable();
+      table.timestamp('start_time', { useTz: true }).notNullable();
+      table.timestamp('end_time', { useTz: true }).notNullable();
       table.string('reason_for_visit').notNullable();
       table.text('remark').nullable();
       table.unique(['provider_id', 'start_time', 'end_time']); // Prevent double-booking
