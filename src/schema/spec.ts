@@ -1,7 +1,11 @@
 import { type OpenAPIV3 } from 'express-openapi-validator/dist/framework/types';
 import { error, errorResponseSchema } from './error';
-import { emailConfirmationResponseSchema, loginResponseSchema, userRegistrationResponseSchema } from './response';
-import { userRegisterationInputSchema } from './request';
+import { userRegisterationInputSchema } from './register';
+import {
+  emailConfirmationResponseSchema,
+  loginResponseSchema,
+  userRegistrationResponseSchema,
+} from './response';
 
 const v1Prefix = 'v1';
 

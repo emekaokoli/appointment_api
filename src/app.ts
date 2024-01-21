@@ -6,8 +6,9 @@ import { setUpRoutes } from './module/setupRoutes';
 export const createApp = (): Application => {
   const app = express();
 
-  app.use(urlencoded({ extended: true }));
+  
   app.use(json());
+  app.use(urlencoded({ extended: true }));
   app.use(pino());
 
   setUpRoutes(app);

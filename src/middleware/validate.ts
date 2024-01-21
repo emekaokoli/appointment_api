@@ -14,6 +14,5 @@ export const validate =
       if (error) {
         return ResponseBuilder.failure(res, 400, error?.message);
       }
-      next();
     }
   };

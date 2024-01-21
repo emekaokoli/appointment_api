@@ -1,6 +1,8 @@
+import { generateSchema } from '@anatine/zod-openapi';
 import { string, z } from 'zod';
 
 export const createUser = z.object({
+  // body: z.object({
   email: z.string({ required_error: 'email is required' }).email({
     message: 'invalid email address',
   }),
@@ -14,6 +16,7 @@ export const createUser = z.object({
     }),
   password: z.string({
     required_error: 'password is required',
+    // }),
   }),
 });
 
@@ -27,3 +30,6 @@ export const user = z.object({
 
 export type CreateUser = z.infer<typeof createUser>;
 export type User = z.infer<typeof user>;
+
+export const createUserSchema = generateSchema(createUser);
+export const userSchema = generateSchema(user);
