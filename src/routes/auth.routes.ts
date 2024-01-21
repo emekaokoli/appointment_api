@@ -1,36 +1,58 @@
 import { Request, Response, Router } from 'express';
 import { isEmpty, omit } from 'lodash';
-import { validate } from '../middleware/validate';
-import { createUser } from '../schema/user';
+import { config } from '../config/default';
 import {
   create,
   getAll,
   getByEmail,
   getById,
-} from '../services/patients.service';
+  validatePassword,
+} from '../services/auth.service';
 import { DomainErrror } from '../utils/error';
+import { signJwt } from '../utils/jwt.util';
 import { ResponseBuilder } from '../utils/responseBuilder';
 
+const { accessTokenTtl } = config;
+
 const router = Router();
+
+export async function loginHandler(req: Request, res: Response) {
+  const { email, password } = req.body;
+
+  try {
+    const user = await validatePassword({ email, password });
+
+    const accessToken = signJwt(
+      { user: omit(user, ['password']) },
+      { expiresIn: accessTokenTtl } // 60 minutes
+    );
+
+    return ResponseBuilder.success(res, 200, { accessToken });
+  } catch (error: any) {
+    return ResponseBuilder.failure(res, 500, error.message);
+  }
+}
 
 async function allPatients(req: Request, res: Response): Promise<void> {
   try {
     const user = await getAll();
     const omitedUser = user.map((user) => omit(user, ['password']));
-    ResponseBuilder.success(res, 200, { users: omitedUser });
+    return ResponseBuilder.success(res, 200, { users: omitedUser });
   } catch (error) {
-    ResponseBuilder.failure(res, 500, 'Internal Server Error');
+    return ResponseBuilder.failure(res, 500, 'Internal Server Error');
   }
 }
 
-async function createNewUser(req: Request, res: Response): Promise<void> {
+async function createHandler(req: Request, res: Response): Promise<void> {
   const { date_of_birth, email, password } = req.body;
   try {
     const userExist = await getByEmail(email);
-    if (!isEmpty(userExist) && userExist[0].email === req.body.email) {
-      DomainErrror.unprocessableEntity([
-        "There's an account associated with this email",
-      ]);
+    if (!isEmpty(userExist)) {
+      return ResponseBuilder.failure(
+        res,
+        400,
+        "There's an account associated with this email"
+      );
     }
     const user = await create({ email, date_of_birth, password });
 
@@ -38,7 +60,7 @@ async function createNewUser(req: Request, res: Response): Promise<void> {
   } catch (error: any) {
     console.trace(error.message);
 
-    ResponseBuilder.failure(res, 400, error?.message);
+    return ResponseBuilder.failure(res, 400, error?.message);
   }
 }
 
@@ -59,11 +81,9 @@ async function findById(req: Request, res: Response): Promise<void> {
   }
 }
 
-// eslint-disable-next-line
-router.get('/:id', findById);
-// eslint-disable-next-line
 router.get('/', allPatients);
-// eslint-disable-next-line
-router.post('/', validate(createUser), createNewUser);
+router.get('/:id', findById);
+router.post('/login', loginHandler);
+router.post('/register', createHandler);
 
 export { router };

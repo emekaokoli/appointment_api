@@ -1,5 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { isEmpty } from 'lodash';
+import { deserializeUser } from '../middleware/authenticate';
+import requireUser from '../middleware/requireUser';
 import { validate } from '../middleware/validate';
 import { validateProviders } from '../schema/provider';
 import { AllProviders, FindOne, create } from '../services/providers.service';
@@ -43,9 +45,15 @@ async function findOneProvider(req: Request, res: Response) {
   }
 }
 
-router.get('/:id', findOneProvider);
-router.get('/', getProviders);
-router.post('/', validate(validateProviders), createProvider);
+router.get('/:id', deserializeUser, requireUser, findOneProvider);
+router.get('/', deserializeUser, requireUser, getProviders);
+router.post(
+  '/',
+  deserializeUser,
+  requireUser,
+  validate(validateProviders),
+  createProvider
+);
 
 export { router };
 

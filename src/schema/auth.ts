@@ -27,9 +27,28 @@ export const user = z.object({
   date_of_birth: string(),
   created_at: z.string(),
 });
+export const OmiteduserSchema = z.object({
+  email: z.string().email(),
+  user_id: z.string(),
+  date_of_birth: string(),
+  created_at: z.string(),
+});
+
+export const loginUser = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
+
+const token = z.object({
+  accessToken: z.string(),
+});
 
 export type CreateUser = z.infer<typeof createUser>;
 export type User = z.infer<typeof user>;
+export type omittedUser = z.infer<typeof OmiteduserSchema>;
+export type loginUserType = z.infer<typeof loginUser>;
+export type Token = z.infer<typeof token>;
 
 export const createUserSchema = generateSchema(createUser);
 export const userSchema = generateSchema(user);
+export const loginSchema = generateSchema(loginUser);
