@@ -6,14 +6,13 @@ import { setUpRoutes } from './module/setupRoutes';
 export const createApp = (): Application => {
   const app = express();
 
-  
   app.use(json());
   app.use(urlencoded({ extended: true }));
   app.use(pino());
+  app.use(errorHandler());
 
   setUpRoutes(app);
 
-  app.use(errorHandler());
 
   return app;
 };

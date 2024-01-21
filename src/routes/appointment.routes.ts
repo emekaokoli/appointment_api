@@ -1,6 +1,8 @@
 import { Request, Response, Router } from 'express';
+import { deserializeUser } from '../middleware/authenticate';
+import requireUser from '../middleware/requireUser';
 import { validate } from '../middleware/validate';
-import { appointmentSchema } from '../schema/appointment';
+import { appointmentId, appointmentSchema } from '../schema/appointment';
 import {
   AllAppointments,
   CheckIfAppointmentExists,
@@ -16,9 +18,9 @@ async function getAllAppointments(req: Request, res: Response) {
   try {
     const appointments = await AllAppointments();
 
-    ResponseBuilder.success(res, 200, { appointments });
+    return ResponseBuilder.success(res, 200, { appointments });
   } catch (error) {
-    ResponseBuilder.failure(res, 500, 'Internal Server Error');
+    return ResponseBuilder.failure(res, 500, 'Internal Server Error');
   }
 }
 
@@ -58,11 +60,9 @@ const createAppointment = async (req: Request, res: Response) => {
       remark,
     });
 
-    ResponseBuilder.success(res, 200, { booked });
+    return ResponseBuilder.success(res, 200, { booked });
   } catch (error: any) {
-    console.trace(error.stack);
-
-    ResponseBuilder.failure(res, 500, error.message);
+    return ResponseBuilder.failure(res, 500, error.message);
   }
 };
 
@@ -71,21 +71,31 @@ async function FindOneAppointment(req: Request, res: Response) {
   try {
     const existingAppointment = await CheckIfAppointmentExists(id);
     if (existingAppointment) {
-      ResponseBuilder.failure(res, 404, 'Appointment not found');
+      return ResponseBuilder.failure(res, 404, 'Appointment not found');
     }
 
     const appointment = await FindOne(id);
-    ResponseBuilder.success(res, 200, { appointment });
+    return ResponseBuilder.success(res, 200, { appointment });
   } catch (error) {
-    ResponseBuilder.failure(res, 500, 'Internal Server Error');
+    return ResponseBuilder.failure(res, 500, 'Internal Server Error');
   }
 }
 
-// eslint-disable-next-line
-router.get('/:id', FindOneAppointment);
-// eslint-disable-next-line
-router.get('/', getAllAppointments);
-// eslint-disable-next-line
-router.post('/', validate(appointmentSchema), createAppointment);
+router.get('/', deserializeUser, requireUser, getAllAppointments);
+router.get(
+  '/:id',
+  deserializeUser,
+  requireUser,
+  validate(appointmentId),
+  FindOneAppointment
+);
+
+router.post(
+  '/',
+  deserializeUser,
+  requireUser,
+  validate(appointmentSchema),
+  createAppointment
+);
 
 export { router };
