@@ -20,4 +20,4 @@ export type providerInput = {
 };
 
 export type providerType = z.infer<typeof validateProviders>;
-export const validateProvidersSchema = generateSchema(validateProviders);
+export const ProviderSchema = generateSchema(validateProviders);

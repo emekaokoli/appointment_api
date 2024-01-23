@@ -17,7 +17,6 @@ export function error (description: string): OpenAPIV3.ResponseObject {
 
 const errorResponse = z.object({
   message: z.string(),
-  issues: z.array(z.string())
 });
 
 export const errorResponseSchema = generateSchema(errorResponse);

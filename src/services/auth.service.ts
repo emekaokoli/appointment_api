@@ -1,7 +1,12 @@
 import bcrypt from 'bcrypt';
 import { omit } from 'lodash';
 import knex from '../db/knex';
-import { CreateUser, User, loginUserType, omittedUser } from '../schema/auth';
+import {
+  Registeration,
+  User,
+  loginUserType,
+  omittedUser,
+} from '../schema/response';
 import { DomainErrror } from '../utils/error';
 
 export async function getAll(): Promise<User[]> {
@@ -13,12 +18,12 @@ export async function getById(id: string): Promise<User[]> {
   const user = await knex('users').select('*').where({ user_id: id });
   return user[0];
 }
-export async function getByEmail(email: string): Promise<User[]> {
+export async function getByEmail(email: string): Promise<User> {
   const user = await knex('users').select('*').where({ email });
   return user[0];
 }
 
-export async function create(user: CreateUser): Promise<CreateUser> {
+export async function create(user: Registeration): Promise<omittedUser[]> {
   try {
     const saltWorkFactor = 10;
     const salt = bcrypt.genSaltSync(saltWorkFactor);
@@ -29,15 +34,10 @@ export async function create(user: CreateUser): Promise<CreateUser> {
       password: hashedPassword,
       date_of_birth: user.date_of_birth,
     };
-
-    const newUser = await knex('users').insert(encryptedUser).returning('*');
-    return newUser[0];
+    const [newUser] = await knex('users').insert(encryptedUser).returning('*');
+    const userWithoutPassword = removePassword<omittedUser[]>(newUser);
+    return userWithoutPassword;
   } catch (error: any) {
-    // Handle unique constraint violation
-    if (error.code === '23505') {
-      throw new Error('User with this email already exists.');
-    }
-
     throw DomainErrror.internalError(error.message);
   }
 }
@@ -69,4 +69,10 @@ export async function validatePassword({
   }
 
   return omit(foundUser, ['password']);
+}
+
+export function removePassword<T extends Record<string, any>>(
+  user: T
+): Omit<T, 'password'> {
+  return omit(user, ['password']);
 }

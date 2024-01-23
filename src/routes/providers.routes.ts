@@ -13,7 +13,7 @@ async function getProviders(req: Request, res: Response) {
   try {
     const providers = await AllProviders();
 
-    ResponseBuilder.success(res, 200, { providers });
+    ResponseBuilder.success(res, 200, { results: providers });
   } catch (error) {
     ResponseBuilder.failure(res, 500, 'Internal Server Error');
   }
@@ -24,7 +24,7 @@ async function createProvider(req: Request, res: Response) {
   try {
     const provider = await create({ name, bio, title });
 
-    ResponseBuilder.success(res, 201, { provider });
+    ResponseBuilder.success(res, 201, { results: provider });
   } catch (error) {
     ResponseBuilder.failure(res, 500, 'Internal Server Error');
   }
@@ -39,7 +39,7 @@ async function findOneProvider(req: Request, res: Response) {
       ResponseBuilder.failure(res, 404, 'Provider not found');
     }
 
-    ResponseBuilder.success(res, 200, { provider });
+    ResponseBuilder.success(res, 200, { results: provider });
   } catch (error) {
     ResponseBuilder.failure(res, 500, 'Internal Server Error');
   }

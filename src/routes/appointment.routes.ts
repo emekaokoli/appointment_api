@@ -1,4 +1,6 @@
 import { Request, Response, Router } from 'express';
+import { isEmpty } from 'lodash';
+import { AuthenticatedRequest } from '../../type';
 import { deserializeUser } from '../middleware/authenticate';
 import requireUser from '../middleware/requireUser';
 import { validate } from '../middleware/validate';
@@ -7,9 +9,12 @@ import {
   AllAppointments,
   CheckIfAppointmentExists,
   FindOne,
+  bookedSessions,
   checkDoubleBooking,
   create,
+  updateAppointments,
 } from '../services/appointment.service';
+import { DomainErrror } from '../utils/error';
 import { ResponseBuilder } from '../utils/responseBuilder';
 
 const router = Router();
@@ -31,10 +36,13 @@ const createAppointment = async (req: Request, res: Response) => {
     end_time,
     reason_for_visit,
     remark,
-    patient_id,
+    user_id,
   } = req.body;
 
   try {
+    console.log('from body');
+    console.table({ provider_id, start_time, end_time });
+
     const existingAppointment = await checkDoubleBooking(
       provider_id,
       start_time,
@@ -52,7 +60,7 @@ const createAppointment = async (req: Request, res: Response) => {
     }
 
     const booked = create({
-      patient_id,
+      user_id,
       provider_id,
       start_time,
       end_time,
@@ -60,8 +68,10 @@ const createAppointment = async (req: Request, res: Response) => {
       remark,
     });
 
-    return ResponseBuilder.success(res, 200, { booked });
+    return ResponseBuilder.success(res, 200, { results: booked });
   } catch (error: any) {
+    console.trace(error.message);
+
     return ResponseBuilder.failure(res, 500, error.message);
   }
 };
@@ -75,20 +85,43 @@ async function FindOneAppointment(req: Request, res: Response) {
     }
 
     const appointment = await FindOne(id);
-    return ResponseBuilder.success(res, 200, { appointment });
+    return ResponseBuilder.success(res, 200, { results: appointment });
   } catch (error) {
     return ResponseBuilder.failure(res, 500, 'Internal Server Error');
   }
 }
 
-router.get('/', deserializeUser, requireUser, getAllAppointments);
-router.get(
-  '/:id',
-  deserializeUser,
-  requireUser,
-  validate(appointmentId),
-  FindOneAppointment
-);
+async function updatehandler(req: AuthenticatedRequest, res: Response) {
+  const { appointmentId } = req.params;
+
+  try {
+    const appointment = await updateAppointments(appointmentId, req.body);
+
+    if (isEmpty(appointment) || !appointment) {
+      return DomainErrror.notFound(['Appointment not found']);
+    }
+
+    return ResponseBuilder.success(res, 200, { results: appointment });
+  } catch (error: any) {
+    return ResponseBuilder.failure(res, 500, error.message);
+  }
+}
+async function bookingHandler(req: AuthenticatedRequest, res: Response) {
+  const { providerId } = req.params;
+
+  try {
+    const booked = await bookedSessions(Number(providerId));
+    if (booked.length === 0 || isEmpty(booked)) {
+      return ResponseBuilder.failure(res, 404, 'Appointment not found');
+    }
+
+    return ResponseBuilder.success(res, 200, { results: booked });
+  } catch (error: any) {
+    console.log(error.stack);
+
+    return ResponseBuilder.failure(res, 500, error.message);
+  }
+}
 
 router.post(
   '/',
@@ -98,4 +131,30 @@ router.post(
   createAppointment
 );
 
+router.get('/', deserializeUser, requireUser, getAllAppointments);
+router.get(
+  '/:appointmentId',
+  deserializeUser,
+  requireUser,
+  validate(appointmentId),
+  FindOneAppointment
+);
+
+router.get(
+  '/booked/:providerId',
+  deserializeUser,
+  requireUser,
+  // validate(providerId),
+  bookingHandler
+);
+
+router.put(
+  '/:appointmentId',
+  deserializeUser,
+  requireUser,
+  validate(appointmentSchema),
+  updatehandler
+);
+
 export { router };
+

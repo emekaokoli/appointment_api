@@ -1,9 +1,8 @@
 // server.ts
 import { createApp } from './app'; // Adjust the path accordingly
-import { config } from './config/default';
 import { logger } from './utils/logger';
 
-const { port } = config;
+const port = process.env.PORT || 1487;
 
 createApp().listen(port, () => {
   logger.info(`Server is running on port ${port}`);

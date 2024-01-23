@@ -37,7 +37,7 @@ async function allPatients(req: Request, res: Response): Promise<void> {
   try {
     const user = await getAll();
     const omitedUser = user.map((user) => omit(user, ['password']));
-    return ResponseBuilder.success(res, 200, { users: omitedUser });
+    return ResponseBuilder.success(res, 200, { results: omitedUser });
   } catch (error) {
     return ResponseBuilder.failure(res, 500, 'Internal Server Error');
   }
@@ -46,8 +46,8 @@ async function allPatients(req: Request, res: Response): Promise<void> {
 async function createHandler(req: Request, res: Response): Promise<void> {
   const { date_of_birth, email, password } = req.body;
   try {
-    const userExist = await getByEmail(email);
-    if (!isEmpty(userExist)) {
+    const checkIfExist = await getByEmail(email);
+    if (!isEmpty(checkIfExist) && checkIfExist?.email === email) {
       return ResponseBuilder.failure(
         res,
         400,
@@ -56,11 +56,10 @@ async function createHandler(req: Request, res: Response): Promise<void> {
     }
     const user = await create({ email, date_of_birth, password });
 
-    return ResponseBuilder.success(res, 201, {});
+    return ResponseBuilder.success(res, 201, { user });
   } catch (error: any) {
-    console.trace(error.message);
-
-    return ResponseBuilder.failure(res, 400, error?.message);
+    console.log(error.stack);
+    return ResponseBuilder.failure(res, 500, error?.message);
   }
 }
 
@@ -75,7 +74,7 @@ async function findById(req: Request, res: Response): Promise<void> {
 
     const omitedUser = user.map((user) => omit(user, ['password']));
 
-    return ResponseBuilder.success(res, 200, { user: omitedUser });
+    return ResponseBuilder.success(res, 200, { results: omitedUser });
   } catch (error: any) {
     return ResponseBuilder.failure(res, 500, error.message);
   }
@@ -87,3 +86,4 @@ router.post('/login', loginHandler);
 router.post('/register', createHandler);
 
 export { router };
+

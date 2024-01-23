@@ -1,34 +1,84 @@
-import { z } from 'zod';
 import { generateSchema } from '@anatine/zod-openapi';
+import { date, number, object, string, z } from 'zod';
 
-export const userOutput = z.object({
-  id: z.string(),
-  email: z.string().email(),
-  name: z.string().nullable(),
-  username: z.string().nullable()
+export const registerUser = z.object({
+  // body: z.object({
+  email: string().email(),
+  date_of_birth: string().datetime(),
+  password: string(),
 });
 
-const userRegistrationOutput = z.intersection(userOutput, z.object({
-  confirmationLink: z.string() // TODO - remove after fixing email sending
-}));
+export const user = z.object({
+  email: z.string().email(),
+  password: z.string(),
+  user_id: z.number(),
+  date_of_birth: string(),
+  created_at: z.string(),
+});
+export const Omiteduser = z.object({
+  email: z.string().email(),
+  user_id: z.number(),
+  date_of_birth: string(),
+  created_at: z.string(),
+});
+
+export const login = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
 
 const token = z.object({
   accessToken: z.string(),
-  refreshToken: z.string()
 });
 
-export const userRegistrationResponseSchema = generateSchema(z.object({
-  data: z.object({ user: userRegistrationOutput })
-}));
+export const providerResponse = object({
+  provider_id: number(),
+  name: string(),
+  bio: string(),
+  title: string(),
+});
 
-export const emailConfirmationResponseSchema = generateSchema(z.object({
-  data: z.object({ user: userOutput })
-}));
+export const appointmentResponseSchema = object({
+  appointment_id: number(),
+  provider_id: number(),
+  user_id: number(),
+  start_time: string(),
+  end_time: string(),
+  reason_for_visit: string(),
+  remark: string().optional(),
+});
 
-export const loginResponseSchema = generateSchema(z.object({
-  data: z.object({ token })
-}));
+export const bookedSchema = object({
+  appointment_id: number(),
+  user_id: number(),
+  start_time: string() || date(),
+  end_time: string() || date(),
+  reason_for_visit: string()
+});
 
-export type UserRegistrationOutput = z.infer<typeof userRegistrationOutput>;
-export type UserOutput = z.infer<typeof userOutput>;
 export type Token = z.infer<typeof token>;
+export type Registeration = z.infer<typeof registerUser>;
+export type User = z.infer<typeof user>;
+export type omittedUser = z.infer<typeof Omiteduser>;
+export type loginUserType = z.infer<typeof login>;
+export type Appointment = z.infer<typeof appointmentResponseSchema>;
+export type Provider = z.infer<typeof providerResponse>;
+export type Booked = z.infer<typeof bookedSchema>;
+
+export const RegisterResponseSchema = generateSchema(
+  z.object({
+    data: z.object({ user: Omiteduser }),
+  })
+);
+export const ProviderReponseSchema = generateSchema(providerResponse);
+export const RegisterSchema = generateSchema(registerUser);
+export const AppointmentResponseSchema = generateSchema(
+  appointmentResponseSchema
+);
+export const UserSchema = generateSchema(Omiteduser);
+export const loginSchema = generateSchema(login);
+export const loginResponseSchema = generateSchema(
+  z.object({
+    data: z.object({ token }),
+  })
+);

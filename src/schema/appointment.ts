@@ -1,15 +1,15 @@
 import { generateSchema } from '@anatine/zod-openapi';
-import { array, object, string, z } from 'zod';
+import { array, number, object, string, z } from 'zod';
 
 export const appointmentSchema = object({
   body: object({
-    patient_id: string({
+    user_id: number({
       required_error: 'Patient ID is required',
-      invalid_type_error: 'Patient ID must be a string',
+      invalid_type_error: 'Patient ID must be a number',
     }),
-    provider_id: string({
+    provider_id: number({
       required_error: 'Provider ID is required',
-      invalid_type_error: 'Provider ID must be a string',
+      invalid_type_error: 'Provider ID must be a number',
     }),
     start_time: string({
       required_error: 'Start time is required',
@@ -30,32 +30,21 @@ export const appointmentSchema = object({
   }),
 });
 
-export const patientId = object({
-  patient_id: string({
-    required_error: 'Patient ID is required',
-    invalid_type_error: 'Patient ID must be a string',
-  }),
+export const usertId = object({
+  user_id: number(),
 });
 
 export const providerId = object({
-  provider_id: string({
-    required_error: 'Provider ID is required',
-    invalid_type_error: 'Provider ID must be a string',
-  }),
+  provider_id: number(),
 });
 
 export const appointmentId = object({
-  body: object({
-    appointment_id: string({
-      required_error: 'Appointment ID is required',
-      invalid_type_error: 'Appointment ID must be a string',
-    }),
-  }),
+  appointment_id: number(),
 });
 
 export type appointmentInput = {
-  patient_id: string;
-  provider_id: string;
+  user_id: number;
+  provider_id: number;
   start_time: string;
   end_time: string;
   reason_for_visit: Array<string[]>;

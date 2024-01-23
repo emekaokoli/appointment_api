@@ -25,7 +25,7 @@ exports.up = function (knex) {
         .references('provider_id')
         .inTable('providers');
       table
-        .integer('patient_id')
+        .integer('user_id')
         .notNullable()
         .references('user_id')
         .inTable('users');
