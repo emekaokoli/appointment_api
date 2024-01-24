@@ -1,5 +1,4 @@
 import express, { Application, json, urlencoded } from 'express';
-import * as OpenApiValidator from 'express-openapi-validator';
 import pino from 'pino-http';
 import swaggerUi from 'swagger-ui-express';
 import { errorHandler } from './middleware/errorHandler';
@@ -14,14 +13,6 @@ export const createApp = (): Application => {
   app.use(urlencoded({ extended: true }));
   app.use(pino());
   app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(spec));
-
-  app.use(
-    OpenApiValidator.middleware({
-      apiSpec: spec,
-      validateRequests: true,
-      // validateResponses: true
-    })
-  );
 
   app.use(openAPIValidatorErrorMiddleware());
   app.use(errorHandler());
