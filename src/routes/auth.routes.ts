@@ -33,7 +33,7 @@ export async function loginHandler(req: Request, res: Response) {
   }
 }
 
-async function allPatients(req: Request, res: Response): Promise<void> {
+async function allPatients(_: Request, res: Response): Promise<void> {
   try {
     const user = await getAll();
     const omitedUser = user.map((user) => omit(user, ['password']));

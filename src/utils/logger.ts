@@ -1,17 +1,11 @@
-import pino, {
-  type DestinationStream,
-  type LoggerOptions,
-  type Logger as PinoLogger,
-} from 'pino';
+import pino, { type Logger as PinoLogger } from 'pino';
 
 class Logger {
   private static instance: Logger;
 
-  private constructor(
-    private readonly client: PinoLogger<LoggerOptions | DestinationStream>
-  ) {}
+  private constructor(private readonly client: PinoLogger<string>) {}
 
-  static build(client: PinoLogger<LoggerOptions | DestinationStream>): Logger {
+  static build(client: PinoLogger<string>): Logger {
     if (this.instance === undefined) {
       this.instance = new Logger(client);
     }

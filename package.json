@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "rm -rf dist/ && tsc",
-    "start": "node dist/server.js",
+    "start": "set NODE_ENV=production && node dist/server.js",
     "migrate": "knex migrate:make create_appointments_tables",
     "migrate:rollback": "knex migrate:rollback",
     "migrate:latest": "knex migrate:latest",

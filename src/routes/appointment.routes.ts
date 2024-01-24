@@ -19,7 +19,7 @@ import { ResponseBuilder } from '../utils/responseBuilder';
 
 const router = Router();
 
-async function getAllAppointments(req: Request, res: Response) {
+async function getAllAppointments(_: Request, res: Response) {
   try {
     const appointments = await AllAppointments();
 

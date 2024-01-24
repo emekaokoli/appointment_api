@@ -9,7 +9,7 @@ import { ResponseBuilder } from '../utils/responseBuilder';
 
 const router = Router();
 
-async function getProviders(req: Request, res: Response) {
+async function getProviders(_: Request, res: Response) {
   try {
     const providers = await AllProviders();
 
