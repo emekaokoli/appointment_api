@@ -1,6 +1,6 @@
 import jwt, { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import { config } from '../config/default';
-import { Token } from '../schema/auth';
+import { Token } from '../schema/response';
 import { logger } from './logger';
 const { accessTokenPrivateKey, accessTokenPublicKey } = config;
 

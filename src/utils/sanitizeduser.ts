@@ -1,4 +1,4 @@
-import { User } from '@/schema/auth';
+import { User } from '../schema/response';
 
 type SanitizedUser = Omit<User, 'password'>;
 
