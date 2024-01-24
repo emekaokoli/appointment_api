@@ -58,7 +58,6 @@ async function createHandler(req: Request, res: Response): Promise<void> {
 
     return ResponseBuilder.success(res, 201, { user });
   } catch (error: any) {
-    console.log(error.stack);
     return ResponseBuilder.failure(res, 500, error?.message);
   }
 }

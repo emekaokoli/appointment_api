@@ -2,6 +2,7 @@ import moment from 'moment';
 import knex from '../db/knex';
 import { appointmentInput } from '../schema/appointment';
 import { Booked } from '../schema/response';
+import { DomainErrror } from '../utils/error';
 
 export async function AllAppointments() {
   return knex('appointments').select('*');
@@ -13,55 +14,14 @@ export async function FindOne(
   return knex('appointments').select('*').where({ appointment_id });
 }
 
-// export async function checkDoubleBooking(
-//   start_time: string,
-//   end_time: string,
-//   provider_id: string
-// ): Promise<boolean> {
-//   return await knex('appointments')
-//     .where({ provider_id })
-//     .whereBetween('start_time', [start_time, end_time]) // Check overlap
-//     .orWhereBetween('end_time', [start_time, end_time]) // Check overlap
-//     .first();
-// .where({
-//   provider_id,
-// })
-// .andWhere(knex.raw(`"start_time" <= ?::timestamptz`, [end_time]))
-// .andWhere(knex.raw(`"end_time" >= ?::timestamptz`, [start_time]))
-// .first();
-// .andWhere(knex.raw(`"start_time" <= ?`, [end_time]))
-// .andWhere(knex.raw(`"end_time" >= ?`, [start_time]))
-// .first();
-// .andWhere(knex.raw(`"start_time" <= ?::timestamp`, [end_time]))
-// .andWhere(knex.raw(`"end_time" >= ?::timestamp`, [start_time]))
-// .first();
-// .where({
-//   provider_id,
-//   // start_time: knex.raw(`<= ?`, [end_time]),
-//   // end_time: knex.raw(`>= ?`, [start_time]),
-
-//   // start_time: knex.raw(`<= '${end_time}'`), // raw query for <= comparison
-//   // end_time: knex.raw(`>= '${start_time}'`), // raw query for <= comparison
-
-//   // start_time: knex.raw(`<= '${end_time}'`), // Corrected query
-//   // end_time: knex.raw(`>= '${start_time}'`), // Corrected query
-
-// })
-// .first();
-// }
-
 export async function checkDoubleBooking(
-  provider_id: string,
+  provider_id: number,
   start_time: string,
   end_time: string
 ) {
-  console.log({ start_time, end_time });
-
   // Ensure consistent time zone handling
   const startTime = moment.utc(start_time);
   const endTime = moment.utc(end_time);
-  console.log('{ startTime, endTime }');
-  console.log({ startTime, endTime });
 
   return await knex('appointments')
     .where({ provider_id })
@@ -70,10 +30,13 @@ export async function checkDoubleBooking(
     .select();
 }
 
-export async function create(
-  appointment: appointmentInput
-): Promise<appointmentInput> {
-  return knex('appointments').insert(appointment);
+export async function create(appointment: appointmentInput): Promise<number[]> {
+  try {
+    const createdAppointment = await knex('appointments').insert(appointment);
+    return createdAppointment;
+  } catch (error: any) {
+    throw DomainErrror.internalError([error.message]);
+  }
 }
 
 export async function CheckIfAppointmentExists(
@@ -105,8 +68,10 @@ export async function bookedSessions(provider_id: number): Promise<Booked[]> {
     .select(
       'appointments.appointment_id',
       'users.user_id',
+      'users.email',
       'appointments.start_time',
       'appointments.end_time',
-      'appointments.reason_for_visit'
+      'appointments.reason_for_visit',
+      'appointments.remark'
     );
 }

@@ -40,18 +40,12 @@ const createAppointment = async (req: Request, res: Response) => {
   } = req.body;
 
   try {
-    console.log('from body');
-    console.table({ provider_id, start_time, end_time });
-
     const existingAppointment = await checkDoubleBooking(
       provider_id,
       start_time,
       end_time
     );
-
-    console.log({ existingAppointment });
-
-    if (existingAppointment) {
+    if (existingAppointment.length > 0) {
       return ResponseBuilder.failure(
         res,
         400,
@@ -59,7 +53,7 @@ const createAppointment = async (req: Request, res: Response) => {
       );
     }
 
-    const booked = create({
+    await create({
       user_id,
       provider_id,
       start_time,
@@ -68,10 +62,8 @@ const createAppointment = async (req: Request, res: Response) => {
       remark,
     });
 
-    return ResponseBuilder.success(res, 200, { results: booked });
+    return ResponseBuilder.success(res, 201, { message: 'Success' });
   } catch (error: any) {
-    console.trace(error.message);
-
     return ResponseBuilder.failure(res, 500, error.message);
   }
 };
@@ -117,12 +109,11 @@ async function bookingHandler(req: AuthenticatedRequest, res: Response) {
 
     return ResponseBuilder.success(res, 200, { results: booked });
   } catch (error: any) {
-    console.log(error.stack);
-
     return ResponseBuilder.failure(res, 500, error.message);
   }
 }
 
+router.get('/', deserializeUser, requireUser, getAllAppointments);
 router.post(
   '/',
   deserializeUser,
@@ -130,8 +121,6 @@ router.post(
   validate(appointmentSchema),
   createAppointment
 );
-
-router.get('/', deserializeUser, requireUser, getAllAppointments);
 router.get(
   '/:appointmentId',
   deserializeUser,

@@ -1,4 +1,3 @@
-import { trace } from 'console';
 import { NextFunction, Request, Response } from 'express';
 import { AnyZodObject } from 'zod';
 import { ResponseBuilder } from '../utils/responseBuilder';
@@ -7,8 +6,6 @@ export const validate =
   (schema: AnyZodObject) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      trace({ provider: req.params.providerId });
-
       await schema.parseAsync({
         body: req.body,
       });
