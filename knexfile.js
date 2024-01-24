@@ -7,11 +7,11 @@ module.exports = {
     connection: {
       // connectionString: process.env.DATABASE_URL,
       searchPath: ['knex, public'],
-      host: '127.0.0.1',
-      port: 5432,
-      database: 'postgres',
-      user: 'postgres',
-      password: 'master',
+      host: process.env.DB_HOST,
+      port: process.env.PORT,
+      database: process.env.DB_NAME,
+      user: process.env.DB_USER,
+      password: process.env.DB_USER,
     },
     pool: {
       min: 2,
