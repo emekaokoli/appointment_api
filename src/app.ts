@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express, { Application, json, urlencoded } from 'express';
 import pino from 'pino-http';
 import swaggerUi from 'swagger-ui-express';
@@ -8,7 +9,6 @@ import { spec } from './schema/spec';
 
 export const createApp = (): Application => {
   const app = express();
-
   app.use(json());
   app.use(urlencoded({ extended: true }));
   app.use(pino());

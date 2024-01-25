@@ -24,7 +24,7 @@ export async function loginHandler(req: Request, res: Response) {
 
     const accessToken = signJwt(
       { user: omit(user, ['password']) },
-      { expiresIn: accessTokenTtl } // 60 minutes
+      { expiresIn: accessTokenTtl } // 4 hours
     );
 
     return ResponseBuilder.success(res, 200, { accessToken });
