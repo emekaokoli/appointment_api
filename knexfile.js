@@ -9,15 +9,15 @@ module.exports = {
       database: 'postgres',
       user: 'postgres',
       password: 'master',
+      // ssl: { rejectUnauthorized: false },
     },
     pool: {
       min: 2,
       max: 10,
     },
-    searchPath: ['knex, public'],
+    // searchPath: ['knex, public'],
     debug: true,
     migrations: {
-      tableName: 'knex_migrations',
       directory: './src/db/migrations',
     },
     seeds: {
@@ -27,10 +27,17 @@ module.exports = {
 
   production: {
     client: 'pg',
-    connection: process.env.DATABASE_URL,
-    searchPath: ['knex, public'],
+    connection: {
+      host: process.env.host,
+      user: process.env.user,
+      password: process.env.password,
+      database: process.env.database,
+      port: process.env.db_port,
+      ssl: { rejectUnauthorized: false },
+    },
+    // searchPath: ['knex, public'],
     migrations: {
-      tableName: 'knex_migrations',
+      // tableName: 'knex_migrations',
       directory: './src/db/migrations',
     },
     seeds: {

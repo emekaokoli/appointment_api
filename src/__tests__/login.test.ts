@@ -29,7 +29,7 @@ describe('login', () => {
         const password = 'password';
 
         const response = await supertest(app)
-          .post('/api/login')
+          .post('/api/auth/login')
           .send({ email, password });
 
         expect(response.status).toBe(401);
