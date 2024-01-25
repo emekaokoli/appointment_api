@@ -10,7 +10,7 @@
     "migrate": "knex migrate:make create_appointments_tables",
     "migrate:rollback": "knex migrate:rollback --specific 20240125201325_create_appointments_tables.js",
     "migrate:latest": "knex migrate:latest",
-    "seed": "knex seed:make 01_user & knex seed:make 02_providers & knex seed:make 03_appointments",
+    "seed": "knex seed:make 01_user & knex seed:make 02_providers & knex seed:make 03_appointments ",
     "seed:run": "knex seed:run",
     "dev:init": "knex init"
   },

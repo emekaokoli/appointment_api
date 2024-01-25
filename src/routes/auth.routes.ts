@@ -56,7 +56,9 @@ async function createHandler(req: Request, res: Response): Promise<void> {
     }
     const user = await create({ email, date_of_birth, password });
 
-    return ResponseBuilder.success(res, 201, { user });
+    return ResponseBuilder.success(res, 201, {
+      results: 'User created successfully',
+    });
   } catch (error: any) {
     return ResponseBuilder.failure(res, 500, error?.message);
   }

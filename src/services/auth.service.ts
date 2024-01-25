@@ -38,6 +38,8 @@ export async function create(user: Registeration): Promise<omittedUser[]> {
     const userWithoutPassword = removePassword<omittedUser[]>(newUser);
     return userWithoutPassword;
   } catch (error: any) {
+    console.trace(error.stack);
+    
     throw DomainErrror.internalError(error.message);
   }
 }
