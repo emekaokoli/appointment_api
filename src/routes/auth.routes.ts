@@ -54,7 +54,7 @@ async function createHandler(req: Request, res: Response): Promise<void> {
         "There's an account associated with this email"
       );
     }
-    const user = await create({ email, date_of_birth, password });
+     await create({ email, date_of_birth, password });
 
     return ResponseBuilder.success(res, 201, {
       results: 'User created successfully',
