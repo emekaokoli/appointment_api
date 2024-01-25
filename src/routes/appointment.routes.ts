@@ -62,7 +62,9 @@ const createAppointment = async (req: Request, res: Response) => {
       remark,
     });
 
-    return ResponseBuilder.success(res, 201, { message: 'Success' });
+    return ResponseBuilder.success(res, 201, {
+      results: 'Appointment created successfully',
+    });
   } catch (error: any) {
     return ResponseBuilder.failure(res, 500, error.message);
   }
@@ -93,7 +95,9 @@ async function updatehandler(req: AuthenticatedRequest, res: Response) {
       return DomainErrror.notFound(['Appointment not found']);
     }
 
-    return ResponseBuilder.success(res, 200, { results: appointment });
+    return ResponseBuilder.success(res, 200, {
+      results: 'Appointment updated successfully',
+    });
   } catch (error: any) {
     return ResponseBuilder.failure(res, 500, error.message);
   }

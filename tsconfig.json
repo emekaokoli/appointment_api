@@ -52,6 +52,10 @@
     "noUnusedParameters": true, // Report errors on unused parameters
     "pretty": true // Stylize errors and messages using color and context
   },
+    "include": [
+      "**/*.ts",
+      "src/db/knex.js"
+    ],
   "exclude": [
     "node_modules",
     "dist"
