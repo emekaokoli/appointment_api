@@ -7,11 +7,7 @@
     "test": "jest --detectOpenHandles --watchAll",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "rm -rf dist/ && tsc",
-<<<<<<< HEAD
     "start": "set NODE_ENV=production && knex migrate:rollback && knex migrate:latest && knex seed:run && ts-node-dev --respawn --transpile-only src/server.ts",
-=======
-    "start": "set NODE_ENV=production && knex migrate:latest && knex seed:run && ts-node --respawn --transpile-only src/server.ts",
->>>>>>> bbe27ad73d8d503751d3c75a410d1f743cf647a4
     "migrate": "knex migrate:make create_appointments_tables",
     "migrate:rollback": "knex migrate:rollback --specific 20240125201325_create_appointments_tables.js",
     "migrate:latest": "knex migrate:latest",
