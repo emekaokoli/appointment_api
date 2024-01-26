@@ -94,15 +94,13 @@ pnpm seed
 ``
 pnpm seed:run
 ``
-## Live Demo 
-https://appointment-api-1uq8.onrender.com
 
 ## API local documention
 
 http://localhost:1487/api/docs/#/
 
 ## Live demo
-https://appointment-api-6tdx.onrender.com
+https://appointment-api-1uq8.onrender.com
 
 see docs for endpoints.
 
@@ -110,7 +108,7 @@ see docs for endpoints.
 http://localhost:1487/api/docs/#/
 
 ## API web documention
-https://appointment-api-6tdx.onrender.com/api/docs/#/
+https://appointment-api-1uq8.onrender.com/api/docs/#/
 
 ## Design flow
 
