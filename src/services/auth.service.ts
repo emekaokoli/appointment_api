@@ -18,9 +18,9 @@ export async function getById(id: string): Promise<User[]> {
   const user = await knex('users').select('*').where({ user_id: id });
   return user[0];
 }
-export async function getByEmail(email: string): Promise<User> {
+export async function getByEmail(email: string): Promise<User[]> {
   const user = await knex('users').select('*').where({ email });
-  return user[0];
+  return user;
 }
 
 export async function create(user: Registeration): Promise<omittedUser[]> {
@@ -38,8 +38,6 @@ export async function create(user: Registeration): Promise<omittedUser[]> {
     const userWithoutPassword = removePassword<omittedUser[]>(newUser);
     return userWithoutPassword;
   } catch (error: any) {
-    console.trace(error.stack);
-    
     throw DomainErrror.internalError(error.message);
   }
 }
@@ -51,14 +49,21 @@ export function assertUserExist(user: User | undefined): User {
   return user as User;
 }
 
+export function compareAccounts(user: User | undefined): User {
+  if (user === undefined) {
+    throw DomainErrror.notFound(['user does not exist']);
+  }
+  return user as User;
+}
+
 export async function validatePassword({
   email,
   password,
-}: loginUserType): Promise<omittedUser[]> {
-  const foundUser = await knex('users').select('*').where({ email });
+}: loginUserType): Promise<omittedUser | string> {
+  const foundUser = await getByEmail(email);
 
-  if (!foundUser || !foundUser[0]?.password) {
-    throw new Error('Wrong email/password');
+  if (!foundUser || !foundUser.length) {
+    return 'No account exists for this user';
   }
 
   const isValidPassword = await bcrypt.compare(
@@ -67,11 +72,13 @@ export async function validatePassword({
   );
 
   if (!isValidPassword) {
-    throw new Error('Wrong email/password');
+    return 'Invalid username or password';
   }
 
-  return omit(foundUser, ['password']);
+  const newUser = removePassword(foundUser);
+  return newUser[0];
 }
+
 
 export function removePassword<T extends Record<string, any>>(
   user: T

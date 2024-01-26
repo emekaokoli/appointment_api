@@ -1,11 +1,24 @@
 import { generateSchema } from '@anatine/zod-openapi';
+import moment from 'moment';
 import { date, number, object, string, z } from 'zod';
 
 export const registerUser = z.object({
-  // body: z.object({
-  email: string().email(),
-  date_of_birth: string().datetime(),
-  password: string(),
+  email: z.string().email(),
+  date_of_birth: z
+    .string()
+    .refine(
+      (value) => {
+        const parsedDate = moment(value, 'MM/DD/YYYY', true);
+        return parsedDate.isValid();
+      },
+      { message: 'Invalid date format' }
+    )
+    .or(
+      z.instanceof(Date).refine((value) => moment(value).isValid(), {
+        message: 'Invalid date format',
+      })
+    ),
+  password: z.string(),
 });
 
 export const user = z.object({

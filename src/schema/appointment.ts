@@ -39,7 +39,7 @@ export const providerId = object({
 });
 
 export const appointmentId = object({
-  appointment_id: number(),
+  appointment_id: string(),
 });
 
 export type appointmentInput = {

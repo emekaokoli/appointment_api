@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
@@ -5,7 +7,9 @@
 exports.seed = async function (knex) {
   // Deletes ALL existing entries
   await knex('users').del();
-  await knex('users').insert([
+
+  // User data with plain text passwords
+  const users = [
     {
       user_id: 1,
       email: 'user1@example.com',
@@ -24,5 +28,15 @@ exports.seed = async function (knex) {
       date_of_birth: '2000-10-15',
       password: 'password3',
     },
-  ]);
+  ];
+  const hashedUsers = await Promise.all(
+    users.map(async (user) => {
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+      return {
+        ...user,
+        password: hashedPassword,
+      };
+    })
+  );
+  await knex('users').insert(hashedUsers);
 };

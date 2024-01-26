@@ -22,9 +22,11 @@ async function getProviders(_: Request, res: Response) {
 async function createProvider(req: Request, res: Response) {
   const { name, bio, title } = req.body;
   try {
-    const provider = await create({ name, bio, title });
+    await create({ name, bio, title });
 
-    ResponseBuilder.success(res, 201, { results: provider });
+    ResponseBuilder.success(res, 201, {
+      message: 'Provider record created successfully',
+    });
   } catch (error) {
     ResponseBuilder.failure(res, 500, 'Internal Server Error');
   }
