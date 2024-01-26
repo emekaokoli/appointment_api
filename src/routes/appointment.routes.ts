@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from '../../type';
 import { deserializeUser } from '../middleware/authenticate';
 import requireUser from '../middleware/requireUser';
 import { validate } from '../middleware/validate';
-import { appointmentId, appointmentSchema } from '../schema/appointment';
+import { appointmentSchema } from '../schema/appointment';
 import {
   AllAppointments,
   CheckIfAppointmentExists,
@@ -23,7 +23,7 @@ async function getAllAppointments(_: Request, res: Response) {
   try {
     const appointments = await AllAppointments();
 
-    return ResponseBuilder.success(res, 200, { appointments });
+    return ResponseBuilder.success(res, 200, { results: appointments });
   } catch (error) {
     return ResponseBuilder.failure(res, 500, 'Internal Server Error');
   }
@@ -71,14 +71,16 @@ const createAppointment = async (req: Request, res: Response) => {
 };
 
 async function FindOneAppointment(req: Request, res: Response) {
-  const { id } = req.params;
+  const { appointmentId } = req.params;
   try {
-    const existingAppointment = await CheckIfAppointmentExists(id);
-    if (existingAppointment) {
+    const existingAppointment = await CheckIfAppointmentExists(
+      Number(appointmentId)
+    );
+    if (!existingAppointment) {
       return ResponseBuilder.failure(res, 404, 'Appointment not found');
     }
 
-    const appointment = await FindOne(id);
+    const appointment = await FindOne(Number(appointmentId));
     return ResponseBuilder.success(res, 200, { results: appointment });
   } catch (error) {
     return ResponseBuilder.failure(res, 500, 'Internal Server Error');
@@ -89,7 +91,10 @@ async function updatehandler(req: AuthenticatedRequest, res: Response) {
   const { appointmentId } = req.params;
 
   try {
-    const appointment = await updateAppointments(appointmentId, req.body);
+    const appointment = await updateAppointments(
+      Number(appointmentId),
+      req.body
+    );
 
     if (isEmpty(appointment) || !appointment) {
       return DomainErrror.notFound(['Appointment not found']);
@@ -125,21 +130,9 @@ router.post(
   validate(appointmentSchema),
   createAppointment
 );
-router.get(
-  '/:appointmentId',
-  deserializeUser,
-  requireUser,
-  validate(appointmentId),
-  FindOneAppointment
-);
+router.get('/:appointmentId', deserializeUser, requireUser, FindOneAppointment);
 
-router.get(
-  '/booked/:providerId',
-  deserializeUser,
-  requireUser,
-  // validate(providerId),
-  bookingHandler
-);
+router.get('/booked/:providerId', deserializeUser, requireUser, bookingHandler);
 
 router.put(
   '/:appointmentId',

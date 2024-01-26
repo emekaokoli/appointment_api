@@ -1,6 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { isEmpty, omit } from 'lodash';
 import { config } from '../config/default';
+import { validate } from '../middleware/validate';
+import { login, registerUser } from '../schema/response';
 import {
   create,
   getAll,
@@ -21,6 +23,10 @@ export async function loginHandler(req: Request, res: Response) {
 
   try {
     const user = await validatePassword({ email, password });
+
+    if (typeof user === 'string') {
+      return ResponseBuilder.failure(res, 401, user);
+    }
 
     const accessToken = signJwt(
       { user: omit(user, ['password']) },
@@ -47,17 +53,17 @@ async function createHandler(req: Request, res: Response): Promise<void> {
   const { date_of_birth, email, password } = req.body;
   try {
     const checkIfExist = await getByEmail(email);
-    if (!isEmpty(checkIfExist) && checkIfExist?.email === email) {
+    if (!isEmpty(checkIfExist) && checkIfExist?.[0].email === email) {
       return ResponseBuilder.failure(
         res,
         400,
         "There's an account associated with this email"
       );
     }
-     await create({ email, date_of_birth, password });
+    await create({ email, date_of_birth, password });
 
     return ResponseBuilder.success(res, 201, {
-      results: 'User created successfully',
+      message: 'Account created successfully',
     });
   } catch (error: any) {
     return ResponseBuilder.failure(res, 500, error?.message);
@@ -83,8 +89,8 @@ async function findById(req: Request, res: Response): Promise<void> {
 
 router.get('/', allPatients);
 router.get('/:id', findById);
-router.post('/login', loginHandler);
-router.post('/register', createHandler);
+router.post('/login', validate(login), loginHandler);
+router.post('/register', validate(registerUser), createHandler);
 
 export { router };
 

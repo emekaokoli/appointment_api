@@ -9,7 +9,7 @@ export async function AllAppointments() {
 }
 
 export async function FindOne(
-  appointment_id: string
+  appointment_id: number
 ): Promise<appointmentInput[]> {
   return knex('appointments').select('*').where({ appointment_id });
 }
@@ -40,7 +40,7 @@ export async function create(appointment: appointmentInput): Promise<number[]> {
 }
 
 export async function CheckIfAppointmentExists(
-  appointment_id: string
+  appointment_id: number
 ): Promise<boolean> {
   const appointment = await knex('appointments')
     .where({ appointment_id })
@@ -49,7 +49,7 @@ export async function CheckIfAppointmentExists(
 }
 
 export async function updateAppointments(
-  appointmentId: string,
+  appointmentId: number,
   updatedata: appointmentInput
 ): Promise<number[]> {
   const updatedData = await knex('appointments')

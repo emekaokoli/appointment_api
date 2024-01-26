@@ -13,10 +13,32 @@ module.exports = {
     },
     pool: {
       min: 2,
-      max: 10,
+      max: 20,
     },
     // searchPath: ['knex, public'],
-    debug: true,
+    // debug: true,
+    migrations: {
+      directory: './src/db/migrations',
+    },
+    seeds: {
+      directory: './src/db/seeds',
+    },
+  },
+  test: {
+    client: 'pg',
+    connection: {
+      host: '127.0.0.1',
+      database: 'test',
+      user: 'postgres',
+      password: 'master',
+      // ssl: { rejectUnauthorized: false },
+    },
+    pool: {
+      min: 2,
+      max: 20,
+    },
+    // searchPath: ['knex, public'],
+    // debug: true,
     migrations: {
       directory: './src/db/migrations',
     },
@@ -34,6 +56,10 @@ module.exports = {
       database: process.env.database,
       port: process.env.db_port,
       ssl: { rejectUnauthorized: false },
+    },
+    pool: {
+      min: 2,
+      max: 20,
     },
     // searchPath: ['knex, public'],
     migrations: {

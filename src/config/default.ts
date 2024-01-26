@@ -9,7 +9,7 @@ interface Config {
 export const config: Config = {
   DATABASE_URL: 'postgres://postgres:master:5432/postgres',
   port: 1487,
-  accessTokenTtl: '1h',
+  accessTokenTtl: '4h',
   accessTokenPrivateKey: `-----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEAh/DpcD5KB0qwANj/S6jQ/6jQUS2KciPv7VvAFQRiH89xbocl
 P5YddNdi49oxJZTQSAfS8Qg+kriIZsvzSKsaf9tBl4xSYT1pkmCSIJsRsdoOZ6WL
