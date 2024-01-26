@@ -94,6 +94,8 @@ pnpm seed
 ``
 pnpm seed:run
 ``
+## Live Demo 
+https://appointment-api-1uq8.onrender.com
 
 ## API documention
 
