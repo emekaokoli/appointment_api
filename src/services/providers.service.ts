@@ -1,4 +1,4 @@
-import knex from '../db/knex';
+import knex from '../db';
 import { providerInput } from '../schema/provider';
 
 export async function AllProviders() {

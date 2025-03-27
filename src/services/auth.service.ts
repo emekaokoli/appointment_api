@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { omit } from 'lodash';
-import knex from '../db/knex';
+import knex from '../db';
 import {
   Registeration,
   User,
@@ -34,6 +34,7 @@ export async function create(user: Registeration): Promise<omittedUser[]> {
       password: hashedPassword,
       date_of_birth: user.date_of_birth,
     };
+
     const [newUser] = await knex('users').insert(encryptedUser).returning('*');
     const userWithoutPassword = removePassword<omittedUser[]>(newUser);
     return userWithoutPassword;
@@ -78,7 +79,6 @@ export async function validatePassword({
   const newUser = removePassword(foundUser);
   return newUser[0];
 }
-
 
 export function removePassword<T extends Record<string, any>>(
   user: T

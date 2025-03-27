@@ -77,7 +77,7 @@ async function FindOneAppointment(req: Request, res: Response) {
       Number(appointmentId)
     );
     if (!existingAppointment) {
-      return ResponseBuilder.failure(res, 404, 'Appointment not found');
+      return ResponseBuilder.failure(res, 404, 'Appointment not available');
     }
 
     const appointment = await FindOne(Number(appointmentId));
@@ -107,13 +107,14 @@ async function updatehandler(req: AuthenticatedRequest, res: Response) {
     return ResponseBuilder.failure(res, 500, error.message);
   }
 }
+
 async function bookingHandler(req: AuthenticatedRequest, res: Response) {
   const { providerId } = req.params;
 
   try {
     const booked = await bookedSessions(Number(providerId));
     if (booked.length === 0 || isEmpty(booked)) {
-      return ResponseBuilder.failure(res, 404, 'Appointment not found');
+      return ResponseBuilder.failure(res, 404, 'Appointment not available');
     }
 
     return ResponseBuilder.success(res, 200, { results: booked });

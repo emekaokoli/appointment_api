@@ -10,8 +10,8 @@ export function signJwt(object: Object, options?: jwt.SignOptions | undefined) {
       ...(options && options),
       algorithm: 'RS256',
     });
-  } catch (error) {
-    logger.info(`Error signing JWT:, ${error}`);
+  } catch (error: any) {
+    logger.info(`Error signing JWT:, ${error?.message}`);
     throw error;
   }
 }

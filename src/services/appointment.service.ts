@@ -1,5 +1,5 @@
 import moment from 'moment';
-import knex from '../db/knex';
+import knex from '../db';
 import { appointmentInput } from '../schema/appointment';
 import { Booked } from '../schema/response';
 import { DomainErrror } from '../utils/error';

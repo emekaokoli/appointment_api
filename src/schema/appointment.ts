@@ -1,31 +1,46 @@
-import { generateSchema } from '@anatine/zod-openapi';
 import { array, number, object, string, z } from 'zod';
+import { extendZodWithOpenApi } from 'zod-openapi';
+
+extendZodWithOpenApi(z);
 
 export const appointmentSchema = object({
-  user_id: number({
-    required_error: 'Patient ID is required',
-    invalid_type_error: 'Patient ID must be a number',
+  user_id: number().openapi({
+    example: 1,
+    description: 'The ID of the user making the appointment',
   }),
-  provider_id: number({
-    required_error: 'Provider ID is required',
-    invalid_type_error: 'Provider ID must be a number',
+  provider_id: number().openapi({
+    example: 1,
+    description: 'The ID of the provider for the appointment',
   }),
-  start_time: string({
-    required_error: 'Start time is required',
-    invalid_type_error: 'Start time must be a string',
+  start_time: string().openapi({
+    example: '2022-01-01T10:00:00Z',
+    description: 'The start time of the appointment',
   }),
   end_time: string({
     required_error: 'End time is required',
     invalid_type_error: 'End time must be a string',
+  }).openapi({
+    example: '2022-01-01T11:00:00Z',
+    description: 'The end time of the appointment',
   }),
 
-  reason_for_visit: array(
-    string({
-      required_error: 'Reason for visit is required',
-      invalid_type_error: 'Reason for visit must be a string',
-    })
-  ).default(['General Checkup', 'Blood test']),
-  remark: string().nullable(),
+  reason_for_visit: array(string()).openapi({
+    example: ['General Checkup', 'Blood test'],
+    description: 'The reason for the appointment',
+  }),
+  remark: string().nullable().openapi({
+    example: 'Patient is feeling fine',
+    description: 'Any additional remarks for the appointment',
+  }),
+}).openapi({
+  example: {
+    user_id: 1,
+    provider_id: 2,
+    start_time: '2023-04-10T10:00:00',
+    end_time: '2023-04-10T11:00:00',
+    reason_for_visit: ['General Checkup', 'Blood test'],
+    remark: 'Patient is feeling fine',
+  },
 });
 
 export const usertId = object({
@@ -50,4 +65,3 @@ export type appointmentInput = {
 };
 
 export type appointmentType = z.infer<typeof appointmentSchema>;
-export const createAppointmentSchema = generateSchema(appointmentSchema);

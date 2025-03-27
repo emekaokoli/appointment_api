@@ -1,18 +1,23 @@
-# Installs Node.js image
-FROM node:16.13.1-alpine3.14
+FROM node:lts-alpine
 
-# sets the working directory for any RUN, CMD, COPY command
-# all files we put in the Docker container running the server will be in /usr/src/app (e.g. /usr/src/app/package.json)
-WORKDIR /usr/src/app
+ENV NODE_ENV=production
+ENV PG_HOST=dpg-cmop7fun7f5s73d9c320-a
+ENV PG_PORT=5432
+ENV PG_USER=postgre
+ENV PG_PASSWORD=0DWmVu6AnPW8m9arV2bjyB3M3qEAnpbY
+ENV PG_DATABASE=postgre_vho1
 
-# Copies package.json, package-lock.json, tsconfig.json, .env to the root of WORKDIR
-COPY ["package.json", "package-lock.json", "tsconfig.json", ".env", "./"]
+WORKDIR /src
 
-# Copies everything in the src directory to WORKDIR/src
-COPY ./src ./src
+COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
+RUN yarn install --production --silent && mv node_modules ../
+COPY . ./src
 
-# Installs all packages
-RUN npm install
+# RUN yarn run build
+# RUN chown -R node /src
 
-# Runs the dev npm script to build & start the server
-CMD npm run dev
+EXPOSE 1339
+
+USER node
+CMD ["pnpm", "start"]
+

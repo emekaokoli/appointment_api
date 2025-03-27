@@ -1,5 +1,5 @@
 // server.ts
-import { createApp } from './app'; // Adjust the path accordingly
+import { createApp } from './app';
 import { logger } from './utils/logger';
 
 const port = process.env.PORT || 1487;

@@ -2,7 +2,7 @@ import { Request, Response, Router } from 'express';
 import { isEmpty, omit } from 'lodash';
 import { config } from '../config/default';
 import { validate } from '../middleware/validate';
-import { login, registerUser } from '../schema/response';
+import { LoginSchema, registerUser } from '../schema/response';
 import {
   create,
   getAll,
@@ -89,7 +89,7 @@ async function findById(req: Request, res: Response): Promise<void> {
 
 router.get('/', allPatients);
 router.get('/:id', findById);
-router.post('/login', validate(login), loginHandler);
+router.post('/login', validate(LoginSchema), loginHandler);
 router.post('/register', validate(registerUser), createHandler);
 
 export { router };

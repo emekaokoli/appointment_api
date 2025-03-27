@@ -1,18 +1,31 @@
-import { type OpenAPIV3 } from 'express-openapi-validator/dist/framework/types';
-import { error } from './error';
+import { createDocument } from 'zod-openapi';
+import { version } from '../../package.json';
+import { appointmentSchema } from './appointment';
+import { error, errorResponseSchema } from './error';
+import { validateProviders } from './provider';
+import {
+  LoginSchema,
+  Omiteduser,
+  RegisterResponseSchema,
+  appointmentResponseSchema,
+  loginResponseSchema,
+  providerResponse,
+  registerUser,
+} from './response';
 
 const v1Prefix = 'api';
 
-export const spec: OpenAPIV3.Document = {
-  openapi: '3.0.3',
+export const spec = createDocument({
+  openapi: '3.1.0',
   info: {
-    title: 'Doctors Scheduler API',
-    version: 'v1',
+    title: 'Doctors Scheduler API Documentation',
+    version,
     description: 'Doctors Schedulers',
   },
   servers: [
     {
       url: 'http://localhost:1487',
+      description: 'Development Endpoint',
     },
   ],
   paths: {
@@ -25,22 +38,7 @@ export const spec: OpenAPIV3.Document = {
           required: true,
           content: {
             'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  email: {
-                    type: 'string',
-                  },
-                  date_of_birth: {
-                    type: 'string',
-                  },
-                  password: {
-                    type: 'string',
-                  },
-                },
-                required: ['email', 'password', 'date_of_birth'],
-                additionalProperties: false,
-              },
+              schema: registerUser,
             },
           },
         },
@@ -49,15 +47,15 @@ export const spec: OpenAPIV3.Document = {
             description: 'Returns the register user object',
             content: {
               'application/json': {
-                schema: {
-                  $ref: '#components/schemas/RegisterResponse',
-                },
+                schema: { $ref: '#/components/schemas/RegisterResponse' },
               },
             },
           },
           400: error('Bad Request'),
           500: error('Internal Server Error'),
-          '4XX': error('Your problem'),
+          // '4XX': error('Your problem'),
+          401: error('Unauthorized'),
+          403: error('Forbidden'),
         },
       },
     },
@@ -71,19 +69,7 @@ export const spec: OpenAPIV3.Document = {
           required: true,
           content: {
             'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  email: {
-                    type: 'string',
-                  },
-                  password: {
-                    type: 'string',
-                  },
-                },
-                required: ['email', 'password'],
-                additionalProperties: false,
-              },
+              schema: { $ref: '#components/schemas/LoginUser' },
             },
           },
         },
@@ -100,6 +86,8 @@ export const spec: OpenAPIV3.Document = {
           },
           400: error('Bad Request'),
           500: error('Internal Server Error'),
+          401: error('Unauthorized'),
+          403: error('Forbidden'),
         },
       },
     },
@@ -161,7 +149,9 @@ export const spec: OpenAPIV3.Document = {
           },
           400: error('Bad Request'),
           500: error('Internal Server Error'),
-          '4XX': error('Your problem'),
+          // '4XX': error('Your problem'),
+          401: error('Unauthorized'),
+          403: error('Forbidden'),
         },
       },
     },
@@ -176,7 +166,9 @@ export const spec: OpenAPIV3.Document = {
             in: 'path',
             description: 'Provider id',
             required: true,
-            schema: { type: 'number' },
+            schema: {
+              type: 'number',
+            },
           },
         ],
         responses: {
@@ -359,178 +351,16 @@ export const spec: OpenAPIV3.Document = {
     },
     headers: {},
     schemas: {
-      Error: {
-        type: 'object',
-        properties: {
-          message: { type: 'string' },
-        },
-      },
-      Register: {
-        type: 'object',
-        properties: {
-          email: {
-            type: 'string',
-            format: 'email',
-          },
-          date_of_birth: {
-            type: 'string',
-            format: 'date-time',
-          },
-          password: {
-            type: 'string',
-          },
-        },
-        required: ['email', 'date_of_birth', 'password'],
-      },
-      RegisterResponse: {
-        type: 'object',
-        properties: {
-          data: {
-            type: 'object',
-            properties: {
-              user: {
-                type: 'object',
-                properties: {
-                  email: { type: 'string', format: 'email' },
-                  user_id: { type: 'number' },
-                  date_of_birth: { type: 'string' },
-                  created_at: { type: 'string' },
-                },
-                required: ['email', 'user_id', 'date_of_birth', 'created_at'],
-              },
-            },
-            required: ['user'],
-          },
-        },
-        required: ['data'],
-      },
-      Login: {
-        type: 'object',
-        properties: {
-          email: { type: 'string' },
-          password: { type: 'string' },
-        },
-      },
-      LoginResponse: {
-        type: 'object',
-        properties: {
-          data: {
-            type: 'object',
-            properties: {
-              token: {
-                type: 'object',
-                properties: {
-                  accessToken: { type: 'string' },
-                },
-                required: ['accessToken'],
-              },
-            },
-            required: ['token'],
-          },
-        },
-        required: ['data'],
-      },
-      Appointment: {
-        type: 'object',
-        properties: {
-          body: {
-            type: 'object',
-            properties: {
-              user_id: {
-                type: 'number',
-              },
-              provider_id: {
-                type: 'number',
-              },
-              start_time: {
-                type: 'string',
-              },
-              end_time: {
-                type: 'string',
-              },
-              reason_for_visit: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-                default: ['General Checkup', 'Blood test'],
-              },
-              remark: { type: 'string', nullable: true },
-            },
-            required: [
-              'user_id',
-              'provider_id',
-              'start_time',
-              'end_time',
-              'reason_for_visit',
-            ],
-          },
-        },
-        required: ['body'],
-      },
-      AppointmentResponse: {
-        type: 'object',
-        properties: {
-          body: {
-            type: 'object',
-            properties: {
-              user_id: { type: 'number' },
-              provider_id: { type: 'number' },
-              start_time: { type: 'string' },
-              end_time: { type: 'string' },
-              reason_for_visit: {
-                type: 'array',
-                items: { type: 'string' },
-                default: ['General Checkup', 'Blood test'],
-              },
-              remark: { type: 'string', nullable: true },
-            },
-            required: [
-              'user_id',
-              'provider_id',
-              'start_time',
-              'end_time',
-              'reason_for_visit',
-            ],
-          },
-        },
-        required: ['body'],
-      },
-      Provider: {
-        type: 'object',
-        properties: {
-          body: {
-            type: 'object',
-            properties: {
-              name: { type: 'string' },
-              bio: { type: 'string' },
-              title: { type: 'string' },
-            },
-            required: ['name', 'bio', 'title'],
-          },
-        },
-        required: ['body'],
-      },
-      ProviderResponse: {
-        type: 'object',
-        properties: {
-          provider_id: { type: 'number' },
-          name: { type: 'string' },
-          bio: { type: 'string' },
-          title: { type: 'string' },
-        },
-        required: ['provider_id', 'name', 'bio', 'title'],
-      },
-      User: {
-        type: 'object',
-        properties: {
-          email: { type: 'string', format: 'email' },
-          user_id: { type: 'number' },
-          date_of_birth: { type: 'string' },
-          created_at: { type: 'string' },
-        },
-        required: ['email', 'user_id', 'date_of_birth', 'created_at'],
-      },
+      Error: errorResponseSchema,
+      Register: registerUser,
+      RegisterResponse: RegisterResponseSchema,
+      LoginUser: LoginSchema,
+      LoginResponse: loginResponseSchema,
+      Appointment: appointmentSchema,
+      AppointmentResponse: appointmentResponseSchema,
+      Provider: validateProviders,
+      ProviderResponse: providerResponse,
+      User: Omiteduser,
     },
   },
-};
+});

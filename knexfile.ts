@@ -1,7 +1,16 @@
-const dotenv = require('dotenv');
-dotenv.config({ path: './.env' });
+import dotenv from 'dotenv';
+import type { Knex } from 'knex';
 
-module.exports = {
+
+dotenv.config();
+
+interface DbConfig {
+  test: Knex.Config;
+  development: Knex.Config;
+  production: Knex.Config;
+}
+
+const config: DbConfig = {
   development: {
     client: 'pg',
     connection: {
@@ -54,7 +63,7 @@ module.exports = {
       user: process.env.user,
       password: process.env.password,
       database: process.env.database,
-      port: process.env.db_port,
+      port: process.env.db_port as number | undefined,
       ssl: { rejectUnauthorized: false },
     },
     pool: {
@@ -71,3 +80,5 @@ module.exports = {
     },
   },
 };
+
+export default config;
