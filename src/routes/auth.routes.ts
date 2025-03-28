@@ -1,6 +1,5 @@
 import { Request, Response, Router } from 'express';
 import { isEmpty, omit } from 'lodash';
-import { config } from '../config/default';
 import { validate } from '../middleware/validate';
 import { LoginSchema, registerUser } from '../schema/response';
 import {
@@ -13,8 +12,6 @@ import {
 import { DomainErrror } from '../utils/error';
 import { signJwt } from '../utils/jwt.util';
 import { ResponseBuilder } from '../utils/responseBuilder';
-
-const { accessTokenTtl } = config;
 
 const router = Router();
 
@@ -30,7 +27,7 @@ export async function loginHandler(req: Request, res: Response) {
 
     const accessToken = signJwt(
       { user: omit(user, ['password']) },
-      { expiresIn: Number(accessTokenTtl) } // 4 hours
+      { expiresIn: '4h' } // 4 hours
     );
 
     return ResponseBuilder.success(res, 200, { accessToken });
