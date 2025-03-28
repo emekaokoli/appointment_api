@@ -1,10 +1,7 @@
-const bcrypt = require('bcryptjs');
+import bcrypt from 'bcryptjs';
+import { Knex } from 'knex';
 
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-exports.seed = async function (knex) {
+export async function seed(knex: Knex): Promise<void> {
   // Deletes ALL existing entries
   await knex('users').del();
 
@@ -38,5 +35,7 @@ exports.seed = async function (knex) {
       };
     })
   );
+
+  // Inserts seed entries
   await knex('users').insert(hashedUsers);
-};
+}

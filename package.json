@@ -8,10 +8,10 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/src/server.js",
-    "migrate": "knex migrate:make create_appointments_tables",
-    "migrate:rollback": "knex migrate:rollback --specific 20240125201325_create_appointments_tables.js",
+    "migrate": "knex migrate:make create_appointments_tables -x ts",
+    "migrate:rollback": "knex migrate:rollback --specific 20250326114114_create_appointments_tables.ts",
     "migrate:latest": "knex migrate:latest",
-    "seed": "knex seed:make 01_user & knex seed:make 02_providers & knex seed:make 03_appointments ",
+    "seed:create": "knex seed:make 001_users -x ts && knex seed:make 002_providers -x ts && knex seed:make 003_appointments -x ts",
     "seed:run": "knex seed:run",
     "dev:init": "knex init"
   },
