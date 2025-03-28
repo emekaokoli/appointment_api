@@ -1,6 +1,6 @@
 import knex, { Knex } from 'knex';
 import request from 'supertest';
-import { test } from '../../knexfile.js';
+import db from '../../knexfile';
 let testDb: Knex<any, unknown[]>;
 
 import { createApp } from '../app';
@@ -9,7 +9,7 @@ const app = createApp();
 
 describe('Provider ', () => {
   beforeAll(async () => {
-    testDb = knex(test);
+    testDb = knex(db.test);
     await testDb.migrate.latest();
     // await testDb.seed.run();
   });

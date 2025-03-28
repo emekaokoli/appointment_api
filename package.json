@@ -6,8 +6,8 @@
   "scripts": {
     "test": "jest --detectOpenHandles --watchAll",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "rm -rf dist/ && tsc",
-    "start": "snode dist/src/index.js",
+    "build": "tsc",
+    "start": "node dist/src/server.js",
     "migrate": "knex migrate:make create_appointments_tables",
     "migrate:rollback": "knex migrate:rollback --specific 20240125201325_create_appointments_tables.js",
     "migrate:latest": "knex migrate:latest",

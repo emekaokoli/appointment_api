@@ -1,6 +1,6 @@
 import knex, { Knex } from 'knex';
 import request from 'supertest';
-import { test } from '../../knexfile.js';
+import db from '../../knexfile';
 import { createApp } from '../app';
 
 const app = createApp();
@@ -8,7 +8,7 @@ let testDb: Knex<any, unknown[]>;
 
 describe('User registration', () => {
   beforeAll(async () => {
-    testDb = knex(test);
+    testDb = knex(db.test);
     await testDb.migrate.latest();
     // await testDb.seed.run();
   });
