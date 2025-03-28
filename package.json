@@ -8,6 +8,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/src/server.js",
+    "postinstall": "npm run build",
     "migrate": "knex migrate:make create_appointments_tables -x ts",
     "migrate:rollback": "knex migrate:rollback --specific 20250326114114_create_appointments_tables.ts",
     "migrate:latest": "knex migrate:latest",
